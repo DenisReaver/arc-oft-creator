@@ -931,7 +931,7 @@ export default function MorgenOFTApp() {
                 </a>
 
                 <a 
-                  href="https://warpcast.com/denisarhipov" 
+                  href="https://farcaster.xyz/tomasshelby.eth" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 text-pink-300 hover:text-pink-400 transition-all hover:scale-105"
