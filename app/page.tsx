@@ -603,7 +603,7 @@ export default function MorgenOFTApp() {
         {
           eid: targetChainId === ARC_CHAIN_ID ? SEPOLIA_EID : ARC_EID,
           msgType: 1,
-          options: "0x000301001101000000000000000000000000000186a0",
+          options: "0x000301001101000000000000000000000000000186a0" as `0x${string}`,   // ← ИСПРАВЛЕНО
         },
       ];
 
@@ -777,7 +777,7 @@ export default function MorgenOFTApp() {
               </div>
             </div>
 
-            {/* Addresses — розовый блок */}
+            {/* Addresses */}
             <div className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-400/40 p-5 rounded-2xl text-sm backdrop-blur-md">
               <p className="text-pink-200 font-medium">
                 <strong>ARC Testnet:</strong> {arcAddress || <span className="text-gray-400">— not deployed —</span>}
