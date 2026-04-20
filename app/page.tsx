@@ -619,8 +619,7 @@ export default function MorgenOFTApp() {
   };
 
   // ==================== SEND (BRIDGE) ====================
-// ==================== SEND (BRIDGE) ====================
-const sendToken = async () => {
+ const sendToken = async () => {
     if (!address) return alert("Connect your wallet");
     if (!recipient) return alert("Please enter the recipient's address");
     if (!publicClient) return alert("Public client is not available");
@@ -651,9 +650,9 @@ const sendToken = async () => {
         to: `0x000000000000000000000000${recipient.slice(2)}` as `0x${string}`,
         amountLD,
         minAmountLD: (amountLD * BigInt(950)) / BigInt(1000),
-        extraOptions: "0x" as `0x${string}`,      // ← исправлено
-        composeMsg: "0x" as `0x${string}`,        // ← исправлено
-        oftCmd: "0x" as `0x${string}`,            // ← исправлено
+        extraOptions: "0x" as `0x${string}`,
+        composeMsg: "0x" as `0x${string}`,
+        oftCmd: "0x" as `0x${string}`,
       };
 
       const quoteResult = await publicClient.readContract({
@@ -663,8 +662,8 @@ const sendToken = async () => {
         args: [sendParam, false],
       });
 
-      let nativeFee = 0n;
-      let lzTokenFee = 0n;
+      let nativeFee = BigInt(0);     // ← исправлено
+      let lzTokenFee = BigInt(0);    // ← исправлено
 
       if (Array.isArray(quoteResult) && quoteResult.length > 0) {
         const fee = quoteResult[0];
@@ -675,7 +674,7 @@ const sendToken = async () => {
         lzTokenFee = BigInt(quoteResult.lzTokenFee || 0);
       }
 
-      if (nativeFee === 0n) throw new Error("Failed to get nativeFee");
+      if (nativeFee === BigInt(0)) throw new Error("Failed to get nativeFee");
 
       const hash = await client.writeContract({
         address: srcAddress as `0x${string}`,
@@ -702,6 +701,7 @@ const sendToken = async () => {
       alert(`Send error: ${error.message}`);
     }
   };
+
 
   const openLayerZeroScan = () => {
     if (!lastTxHash) {
