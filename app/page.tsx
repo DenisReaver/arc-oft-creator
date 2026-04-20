@@ -878,7 +878,7 @@ export default function MorgenOFTApp() {
 
             {/* 4. Set Peer */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">Set Peer Configuration</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">3.Set Peer Configuration</h2>
               <button 
                 onClick={() => setPeer(ARC_CHAIN_ID, SEPOLIA_EID, sepoliaAddress)} 
                 disabled={!arcAddress || !sepoliaAddress} 
@@ -897,7 +897,7 @@ export default function MorgenOFTApp() {
 
             {/* 5. Enforced Options */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">Enforced Options</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">4.Enforced Options</h2>
               <button 
                 onClick={() => setEnforcedOptions(ARC_CHAIN_ID)} 
                 disabled={!arcAddress} 
@@ -914,30 +914,26 @@ export default function MorgenOFTApp() {
               </button>
             </div>
 
-            {/* Социальные ссылки */}
-            <div className="pt-8 border-t border-white/10 mt-8">
-              <p className="text-center text-gray-400 text-sm mb-4">
-                Built with ❤️ using LayerZero
-              </p>
-              <div className="flex justify-center gap-8">
+            {/* ==================== Социальные ссылки ==================== */}
+            <div className="pt-10 border-t border-white/10 mt-6 text-center">
+              <p className="text-gray-400 text-sm mb-3">Follow the developer</p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <a 
                   href="https://x.com/DenisArhipov6" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-pink-300 hover:text-pink-400 transition-all hover:scale-105"
+                  className="text-pink-300 hover:text-pink-400 transition-colors flex items-center gap-2"
                 >
-                  <span className="text-2xl">𝕏</span>
-                  <span className="font-medium">Twitter / X</span>
+                  𝕏 <span className="underline">Twitter / X</span>
                 </a>
-
+                <span className="text-white/30">•</span>
                 <a 
                   href="https://farcaster.xyz/tomasshelby.eth" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 text-pink-300 hover:text-pink-400 transition-all hover:scale-105"
+                  className="text-pink-300 hover:text-pink-400 transition-colors flex items-center gap-2"
                 >
-                  <span className="text-2xl">🟪</span>
-                  <span className="font-medium">Farcaster</span>
+                  🟪 <span className="underline">Farcaster</span>
                 </a>
               </div>
             </div>
