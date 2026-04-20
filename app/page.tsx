@@ -603,7 +603,7 @@ export default function MorgenOFTApp() {
         {
           eid: targetChainId === ARC_CHAIN_ID ? SEPOLIA_EID : ARC_EID,
           msgType: 1,
-          options: "0x000301001101000000000000000000000000000186a0" as `0x${string}`,   // ← ИСПРАВЛЕНО
+          options: "0x000301001101000000000000000000000000000186a0" as `0x${string}`,
         },
       ];
 
@@ -619,7 +619,7 @@ export default function MorgenOFTApp() {
   };
 
   // ==================== SEND (BRIDGE) ====================
- const sendToken = async () => {
+  const sendToken = async () => {
     if (!address) return alert("Connect your wallet");
     if (!recipient) return alert("Please enter the recipient's address");
     if (!publicClient) return alert("Public client is not available");
@@ -662,8 +662,8 @@ export default function MorgenOFTApp() {
         args: [sendParam, false],
       });
 
-      let nativeFee = BigInt(0);     // ← исправлено
-      let lzTokenFee = BigInt(0);    // ← исправлено
+      let nativeFee = BigInt(0);
+      let lzTokenFee = BigInt(0);
 
       if (Array.isArray(quoteResult) && quoteResult.length > 0) {
         const fee = quoteResult[0];
@@ -701,7 +701,6 @@ export default function MorgenOFTApp() {
       alert(`Send error: ${error.message}`);
     }
   };
-
 
   const openLayerZeroScan = () => {
     if (!lastTxHash) {
@@ -879,7 +878,7 @@ export default function MorgenOFTApp() {
 
             {/* 4. Set Peer */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">3.Set Peer Configuration</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">Set Peer Configuration</h2>
               <button 
                 onClick={() => setPeer(ARC_CHAIN_ID, SEPOLIA_EID, sepoliaAddress)} 
                 disabled={!arcAddress || !sepoliaAddress} 
@@ -898,7 +897,7 @@ export default function MorgenOFTApp() {
 
             {/* 5. Enforced Options */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">4.Enforced Options</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">Enforced Options</h2>
               <button 
                 onClick={() => setEnforcedOptions(ARC_CHAIN_ID)} 
                 disabled={!arcAddress} 
@@ -914,6 +913,35 @@ export default function MorgenOFTApp() {
                 Enforced Options on Sepolia
               </button>
             </div>
+
+            {/* Социальные ссылки */}
+            <div className="pt-8 border-t border-white/10 mt-8">
+              <p className="text-center text-gray-400 text-sm mb-4">
+                Built with ❤️ using LayerZero
+              </p>
+              <div className="flex justify-center gap-8">
+                <a 
+                  href="https://x.com/DenisArhipov6" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-pink-300 hover:text-pink-400 transition-all hover:scale-105"
+                >
+                  <span className="text-2xl">𝕏</span>
+                  <span className="font-medium">Twitter / X</span>
+                </a>
+
+                <a 
+                  href="https://warpcast.com/denisarhipov" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-pink-300 hover:text-pink-400 transition-all hover:scale-105"
+                >
+                  <span className="text-2xl">🟪</span>
+                  <span className="font-medium">Farcaster</span>
+                </a>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
