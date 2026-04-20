@@ -879,7 +879,7 @@ export default function MorgenOFTApp() {
 
             {/* 4. Set Peer */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">Set Peer Configuration</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">3.Set Peer Configuration</h2>
               <button 
                 onClick={() => setPeer(ARC_CHAIN_ID, SEPOLIA_EID, sepoliaAddress)} 
                 disabled={!arcAddress || !sepoliaAddress} 
@@ -898,7 +898,7 @@ export default function MorgenOFTApp() {
 
             {/* 5. Enforced Options */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">Enforced Options</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">4.Enforced Options</h2>
               <button 
                 onClick={() => setEnforcedOptions(ARC_CHAIN_ID)} 
                 disabled={!arcAddress} 
