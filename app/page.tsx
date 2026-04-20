@@ -487,6 +487,7 @@ export default function MorgenOFTApp() {
   // ==================== DEPLOY ====================
   const deploy = async (targetChainId: number) => {
     if (!address) return alert("Connect your wallet");
+    if (!publicClient) return alert("Public client is not available");
 
     if (chain?.id !== targetChainId) {
       await switchChain({ chainId: targetChainId });
@@ -541,7 +542,7 @@ export default function MorgenOFTApp() {
         args: [address, parseUnits(mintAmount, 18)],
       });
     } catch (error: any) {
-      alert(`Ошибка Mint: ${error.message}`);
+      alert(`Mint error: ${error.message}`);
     }
   };
 
@@ -621,6 +622,7 @@ export default function MorgenOFTApp() {
   const sendToken = async () => {
     if (!address) return alert("Connect your wallet");
     if (!recipient) return alert("Please enter the recipient's address");
+    if (!publicClient) return alert("Public client is not available");
 
     const srcAddress = fromNetwork === "arc" ? arcAddress : sepoliaAddress;
     const dstEid = fromNetwork === "arc" ? SEPOLIA_EID : ARC_EID;
@@ -630,7 +632,7 @@ export default function MorgenOFTApp() {
 
     if (chain?.id !== targetChainId) {
       await switchChain({ chainId: targetChainId });
-      alert(`The network has been switched to ${fromNetwork === "arc" ? "ARC Testnet" : "Sepolia"}.\nClick the "Submit" button again.`);
+      alert(`The network has been switched to ${fromNetwork === "arc" ? "ARC Testnet" : "Sepolia"}.\nClick the "Send" button again.`);
       return;
     }
 
@@ -672,7 +674,7 @@ export default function MorgenOFTApp() {
         lzTokenFee = BigInt(quoteResult.lzTokenFee || 0);
       }
 
-      if (nativeFee === 0n) throw new Error("Не удалось получить nativeFee");
+      if (nativeFee === 0n) throw new Error("Failed to get nativeFee");
 
       const hash = await client.writeContract({
         address: srcAddress as `0x${string}`,
@@ -690,10 +692,8 @@ export default function MorgenOFTApp() {
         log.topics[0] === "0x85496b760a4b7f8d66384b9df21b381f5d1b1e79f229a47aaf4c232edc2fe59a"
       );
 
-      let guid = "";
       if (oftSentLog && oftSentLog.topics[1]) {
-        guid = oftSentLog.topics[1];
-        setLastLzGuid(guid);
+        setLastLzGuid(oftSentLog.topics[1]);
       }
 
     } catch (error: any) {
@@ -739,7 +739,7 @@ export default function MorgenOFTApp() {
 
           <div className="bg-black/30 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 space-y-10">
 
-            {/* 0. Name token */}
+            {/* 0. Token name */}
             <div>
               <h2 className="text-xl font-semibold mb-4 text-white">0. Token name</h2>
               <div className="grid grid-cols-2 gap-4">
@@ -796,7 +796,7 @@ export default function MorgenOFTApp() {
                   value={mintAmount}
                   onChange={(e) => setMintAmount(e.target.value)}
                   className="bg-white/10 border border-white/20 rounded-2xl px-5 py-3 w-48 text-white"
-                  placeholder="Сумма"
+                  placeholder="Amount"
                 />
                 <button onClick={() => mint(ARC_CHAIN_ID)} disabled={!arcAddress} className="bg-green-600 hover:bg-green-700 disabled:bg-gray-700 px-6 py-3 rounded-2xl font-semibold flex-1">
                   Mint on ARC
@@ -813,7 +813,7 @@ export default function MorgenOFTApp() {
               
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">From the network</label>
+                  <label className="block text-sm text-gray-300 mb-1">From network</label>
                   <select 
                     value={fromNetwork} 
                     onChange={(e) => setFromNetwork(e.target.value as "arc" | "sepolia")}
@@ -824,13 +824,13 @@ export default function MorgenOFTApp() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-1">sum</label>
+                  <label className="block text-sm text-gray-300 mb-1">Amount</label>
                   <input
                     type="number"
                     value={sendAmount}
                     onChange={(e) => setSendAmount(e.target.value)}
                     className="bg-gray-800 border border-pink-500/50 text-white rounded-2xl px-5 py-3 w-full focus:outline-none focus:border-pink-400"
-                    placeholder="Сумма"
+                    placeholder="Amount"
                   />
                 </div>
                 <div>
@@ -853,7 +853,6 @@ export default function MorgenOFTApp() {
                 Send via LayerZero
               </button>
 
-              {/* Новый розовый блок для Tx Hash и GUID */}
               {(lastTxHash || lastLzGuid) && (
                 <div className="bg-gradient-to-r from-pink-500/20 to-purple-500/20 border border-pink-400/40 p-5 rounded-2xl text-sm backdrop-blur-md space-y-3">
                   {lastTxHash && (
@@ -871,7 +870,7 @@ export default function MorgenOFTApp() {
                     onClick={openLayerZeroScan}
                     className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-medium w-full mt-3"
                   >
-                    Открыть в LayerZero Scan →
+                    Open in LayerZero Scan →
                   </button>
                 </div>
               )}
@@ -879,7 +878,7 @@ export default function MorgenOFTApp() {
 
             {/* 4. Set Peer */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">3. Setting up setPeer</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">Set Peer Configuration</h2>
               <button 
                 onClick={() => setPeer(ARC_CHAIN_ID, SEPOLIA_EID, sepoliaAddress)} 
                 disabled={!arcAddress || !sepoliaAddress} 
@@ -896,9 +895,9 @@ export default function MorgenOFTApp() {
               </button>
             </div>
 
-            {/* 4. Enforced Options */}
+            {/* 5. Enforced Options */}
             <div>
-              <h2 className="text-xl font-semibold mb-4 text-white">4. Enforced Options</h2>
+              <h2 className="text-xl font-semibold mb-4 text-white">Enforced Options</h2>
               <button 
                 onClick={() => setEnforcedOptions(ARC_CHAIN_ID)} 
                 disabled={!arcAddress} 
