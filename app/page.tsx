@@ -509,41 +509,37 @@ export default function MorgenOFTApp() {
 
   // ==================== DEPLOY ====================
   const deploy = async (targetChainId: number) => {
-  if (!address) return alert("Connect your wallet");
-  if (!publicClient) return alert("Public client is not available. Please try again.");
-
-  if (chain?.id !== targetChainId) {
-    await switchChain({ chainId: targetChainId });
-    alert(`✅ Switched to ${getNetworkName(targetChainId)}.\n\nWait 3 seconds and click "Deploy" again.`);
-    return;
-  }
-
-  const lzEndpoint = getLzEndpoint(targetChainId);
-
-  try {
-    const client = createWalletClient({
-      chain: chain!,
-      transport: custom(window.ethereum!),
-      account: address,
-    });
-
-    const hash = await client.deployContract({
-      abi: OFT_ABI,
-      bytecode: MORGEN_BYTECODE,
-      args: [name, symbol, lzEndpoint, address],
-    });
-
-    const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
-    if (receipt.contractAddress) {
-      saveAddress(targetChainId, receipt.contractAddress);
-      alert(`✅ Token successfully deployed on ${getNetworkName(targetChainId)}`);
+    if (!address) return alert("Connect your wallet");
+    if (chain?.id !== targetChainId) {
+      await switchChain({ chainId: targetChainId });
+      alert(`✅ Switched to ${getNetworkName(targetChainId)}. Wait 3 seconds and click Deploy again.`);
+      return;
     }
-  } catch (error: any) {
-    console.error("Deploy error:", error);
-    alert(`Deployment error: ${error.message || "Unknown error"}`);
-  }
-};
+
+    const lzEndpoint = getLzEndpoint(targetChainId);
+
+    try {
+      const client = createWalletClient({
+        chain: chain!,
+        transport: custom(window.ethereum!),
+        account: address,
+      });
+
+      const hash = await client.deployContract({
+        abi: OFT_ABI,
+        bytecode: MORGEN_BYTECODE,
+        args: [name, symbol, lzEndpoint, address],
+      });
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.contractAddress) {
+        saveAddress(targetChainId, receipt.contractAddress);
+        alert(`✅ Token deployed on ${getNetworkName(targetChainId)}`);
+      }
+    } catch (error: any) {
+      alert(`Deployment error: ${error.message}`);
+    }
+  };
 
   // ==================== MINT ====================
   const mint = async (targetChainId: number) => {
@@ -759,7 +755,7 @@ export default function MorgenOFTApp() {
 
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-5xl font-bold text-white drop-shadow-2xl">Morgen OFT Creator</h1>
+              <h1 className="text-5xl font-bold text-white drop-shadow-2xl">ARC OFT Creator</h1>
               <p className="text-gray-200 text-lg mt-1">LayerZero • 4 Testnets</p>
             </div>
             <button onClick={resetAll} className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-2xl font-semibold text-sm">
