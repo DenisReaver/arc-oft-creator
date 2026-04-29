@@ -508,38 +508,42 @@ export default function MorgenOFTApp() {
   };
 
   // ==================== DEPLOY ====================
-  const deploy = async (targetChainId: number) => {
-    if (!address) return alert("Connect your wallet");
-    if (chain?.id !== targetChainId) {
-      await switchChain({ chainId: targetChainId });
-      alert(`✅ Switched to ${getNetworkName(targetChainId)}. Wait 3 seconds and click Deploy again.`);
-      return;
+const deploy = async (targetChainId: number) => {
+  if (!address) return alert("Connect your wallet");
+  if (!publicClient) return alert("Public client is not available. Please try again.");
+
+  if (chain?.id !== targetChainId) {
+    await switchChain({ chainId: targetChainId });
+    alert(`✅ Switched to ${getNetworkName(targetChainId)}.\n\nWait 3 seconds and click "Deploy" again.`);
+    return;
+  }
+
+  const lzEndpoint = getLzEndpoint(targetChainId);
+
+  try {
+    const client = createWalletClient({
+      chain: chain!,
+      transport: custom(window.ethereum!),
+      account: address,
+    });
+
+    const hash = await client.deployContract({
+      abi: OFT_ABI,
+      bytecode: MORGEN_BYTECODE,
+      args: [name, symbol, lzEndpoint, address],
+    });
+
+    const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+    if (receipt.contractAddress) {
+      saveAddress(targetChainId, receipt.contractAddress);
+      alert(`✅ Token successfully deployed on ${getNetworkName(targetChainId)}`);
     }
-
-    const lzEndpoint = getLzEndpoint(targetChainId);
-
-    try {
-      const client = createWalletClient({
-        chain: chain!,
-        transport: custom(window.ethereum!),
-        account: address,
-      });
-
-      const hash = await client.deployContract({
-        abi: OFT_ABI,
-        bytecode: MORGEN_BYTECODE,
-        args: [name, symbol, lzEndpoint, address],
-      });
-
-      const receipt = await publicClient.waitForTransactionReceipt({ hash });
-      if (receipt.contractAddress) {
-        saveAddress(targetChainId, receipt.contractAddress);
-        alert(`✅ Token deployed on ${getNetworkName(targetChainId)}`);
-      }
-    } catch (error: any) {
-      alert(`Deployment error: ${error.message}`);
-    }
-  };
+  } catch (error: any) {
+    console.error("Deploy error:", error);
+    alert(`Deployment error: ${error.message || "Unknown error"}`);
+  }
+};
 
   // ==================== MINT ====================
   const mint = async (targetChainId: number) => {
