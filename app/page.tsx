@@ -529,11 +529,10 @@ const deploy = async (targetChainId: number) => {
       args: [name, symbol, lzEndpoint, address],
     } as const;
 
-    // Параметры специально для Arbitrum Sepolia
     if (isArbitrum) {
       const hash = await client.deployContract({
         ...tx,
-        gas: 5_000_000,
+        gas: 5_000_000n,                    // ← bigint
         maxFeePerGas: 300_000_000n,
         maxPriorityFeePerGas: 100_000_000n,
       });
@@ -546,7 +545,7 @@ const deploy = async (targetChainId: number) => {
       return;
     }
 
-    // Обычный deploy для остальных сетей
+    // Для остальных сетей
     const hash = await client.deployContract(tx);
     const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
