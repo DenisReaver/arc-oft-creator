@@ -505,11 +505,11 @@ export default function MorgenOFTApp() {
 // ==================== DEPLOY ====================
 const deploy = async (targetChainId: number) => {
   if (!address) return alert("Connect your wallet");
-  if (!publicClient) return alert("Public client is not available");
+  if (!publicClient) return alert("Public client unavailable");
 
   if (chain?.id !== targetChainId) {
     await switchChain({ chainId: targetChainId });
-    alert(`✅ Switched to ${getNetworkName(targetChainId)}.\n\nWait 3 seconds and click "Deploy" again.`);
+    alert(`Switched to ${getNetworkName(targetChainId)}. Click Deploy again.`);
     return;
   }
 
@@ -523,29 +523,40 @@ const deploy = async (targetChainId: number) => {
       account: address,
     });
 
-    const deployArgs = {
+    const tx = {
       abi: OFT_ABI,
       bytecode: MORGEN_BYTECODE as `0x${string}`,
       args: [name, symbol, lzEndpoint, address],
-    };
+    } as const;
 
-    // Специальные параметры для Arbitrum (и других L2)
+    // Параметры специально для Arbitrum Sepolia
     if (isArbitrum) {
-      deployArgs.gas = 5_000_000;
-      deployArgs.maxFeePerGas = 100_000_000n;      // 0.1 gwei
-      deployArgs.maxPriorityFeePerGas = 50_000_000n;
+      const hash = await client.deployContract({
+        ...tx,
+        gas: 5_000_000,
+        maxFeePerGas: 300_000_000n,
+        maxPriorityFeePerGas: 100_000_000n,
+      });
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.contractAddress) {
+        saveAddress(targetChainId, receipt.contractAddress);
+        alert(`✅ Deployed on ${getNetworkName(targetChainId)}`);
+      }
+      return;
     }
 
-    const hash = await client.deployContract(deployArgs);
-
+    // Обычный deploy для остальных сетей
+    const hash = await client.deployContract(tx);
     const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
     if (receipt.contractAddress) {
       saveAddress(targetChainId, receipt.contractAddress);
-      alert(`✅ Token successfully deployed on ${getNetworkName(targetChainId)}`);
+      alert(`✅ Deployed on ${getNetworkName(targetChainId)}`);
     }
   } catch (error: any) {
     console.error("Deploy error:", error);
-    alert(`Deployment error: ${error.message || "Unknown error"}`);
+    alert(`Deployment error: ${error.message}`);
   }
 };
 
