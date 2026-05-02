@@ -559,6 +559,7 @@ const deploy = async (targetChainId: number) => {
   }
 };
 
+// ==================== MINT ====================
 const mint = async (targetChainId: number) => {
   if (!address) return alert("Connect wallet");
 
@@ -578,11 +579,7 @@ const mint = async (targetChainId: number) => {
   const isL2 = [ARBITRUM_SEPOLIA_CHAIN_ID, OPTIMISM_SEPOLIA_CHAIN_ID].includes(targetChainId);
 
   try {
-    const client = createWalletClient({ 
-      chain: chain!, 
-      transport: custom(window.ethereum!), 
-      account: address 
-    });
+    const client = createWalletClient({ chain: chain!, transport: custom(window.ethereum!), account: address });
 
     const txParams: any = {
       address: targetAddr as `0x${string}`,
@@ -592,20 +589,19 @@ const mint = async (targetChainId: number) => {
     };
 
     if (isL2) {
-      txParams.gas = 2_000_000;
-      txParams.maxFeePerGas = 300_000_000n;
-      txParams.maxPriorityFeePerGas = 100_000_000n;
+      txParams.gas = BigInt(2000000);
+      txParams.maxFeePerGas = BigInt(300000000);
+      txParams.maxPriorityFeePerGas = BigInt(100000000);
     }
 
     await client.writeContract(txParams);
     alert(`✅ Minted on ${getNetworkName(targetChainId)}`);
   } catch (error: any) {
-    console.error(error);
     alert(`Mint error: ${error.message}`);
   }
 };
 
-  // ==================== SET PEER ====================
+// ==================== SET PEER ====================
 const setPeer = async (fromChainId: number, toEid: number, toAddress: string) => {
   if (!address || !toAddress) return alert("Deploy tokens on both networks first.");
 
@@ -641,9 +637,9 @@ const setPeer = async (fromChainId: number, toEid: number, toAddress: string) =>
     };
 
     if (isL2) {
-      txParams.gas = 2_000_000;
-      txParams.maxFeePerGas = 300_000_000n;      // 0.3 gwei
-      txParams.maxPriorityFeePerGas = 100_000_000n;
+      txParams.gas = BigInt(2000000);
+      txParams.maxFeePerGas = BigInt(300000000);
+      txParams.maxPriorityFeePerGas = BigInt(100000000);
     }
 
     await client.writeContract(txParams);
@@ -654,7 +650,7 @@ const setPeer = async (fromChainId: number, toEid: number, toAddress: string) =>
   }
 };
 
-  // ==================== SET ENFORCED OPTIONS ====================
+// ==================== SET ENFORCED OPTIONS ====================
 const setEnforcedOptions = async (targetChainId: number) => {
   if (!address) return alert("Connect your wallet");
 
@@ -696,9 +692,9 @@ const setEnforcedOptions = async (targetChainId: number) => {
     };
 
     if (isL2) {
-      txParams.gas = 2_000_000;
-      txParams.maxFeePerGas = 300_000_000n;
-      txParams.maxPriorityFeePerGas = 100_000_000n;
+      txParams.gas = BigInt(2000000);
+      txParams.maxFeePerGas = BigInt(300000000);
+      txParams.maxPriorityFeePerGas = BigInt(100000000);
     }
 
     await client.writeContract(txParams);
@@ -709,7 +705,6 @@ const setEnforcedOptions = async (targetChainId: number) => {
   }
 };
 
-  // ==================== SEND TOKEN ====================
 // ==================== SEND TOKEN ====================
 const sendToken = async () => {
   if (!address) return alert("Connect your wallet");
@@ -760,22 +755,17 @@ const sendToken = async () => {
     return;
   }
 
-  const isL2 = [ARBITRUM_SEPOLIA_CHAIN_ID, OPTIMISM_SEPOLIA_CHAIN_ID].includes(targetChainId);
+const isL2 = [ARBITRUM_SEPOLIA_CHAIN_ID, OPTIMISM_SEPOLIA_CHAIN_ID].includes(targetChainId);
 
   try {
-    const client = createWalletClient({
-      chain: chain!,
-      transport: custom(window.ethereum!),
-      account: address,
-    });
-
+    const client = createWalletClient({ chain: chain!, transport: custom(window.ethereum!), account: address });
     const amountLD = parseUnits(sendAmount, 18);
 
     const sendParam = {
       dstEid,
       to: `0x000000000000000000000000${recipient.slice(2)}` as `0x${string}`,
       amountLD,
-      minAmountLD: (amountLD * 950n) / 1000n,
+      minAmountLD: (amountLD * BigInt(950)) / BigInt(1000),
       extraOptions: "0x" as `0x${string}`,
       composeMsg: "0x" as `0x${string}`,
       oftCmd: "0x" as `0x${string}`,
@@ -796,7 +786,7 @@ const sendToken = async () => {
     }
 
     if (nativeFee === BigInt(0)) {
-      throw new Error("nativeFee = 0. Make sure you have setPeer AND Enforced Options configured on the source chain.");
+      throw new Error("nativeFee = 0. Make sure you have setPeer AND Enforced Options configured.");
     }
 
     const txParams: any = {
@@ -807,19 +797,17 @@ const sendToken = async () => {
       value: nativeFee,
     };
 
-    // Защита от ошибки на Arbitrum / Optimism
     if (isL2) {
-      txParams.gas = 2_500_000;
-      txParams.maxFeePerGas = 400_000_000n;      // 0.4 gwei
-      txParams.maxPriorityFeePerGas = 150_000_000n;
+      txParams.gas = BigInt(2500000);
+      txParams.maxFeePerGas = BigInt(400000000);
+      txParams.maxPriorityFeePerGas = BigInt(150000000);
     }
 
     const hash = await client.writeContract(txParams);
 
     setLastTxHash(hash);
-    alert(`✅ Send transaction submitted! Hash: ${hash.slice(0, 10)}...`);
+    alert(`✅ Send submitted! Hash: ${hash}`);
   } catch (error: any) {
-    console.error("Send error:", error);
     alert(`Send failed: ${error.message}`);
   }
 };
