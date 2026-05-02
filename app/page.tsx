@@ -532,9 +532,9 @@ const deploy = async (targetChainId: number) => {
     if (isArbitrum) {
       const hash = await client.deployContract({
         ...tx,
-        gas: 5_000_000n,                    // ← bigint
-        maxFeePerGas: 300_000_000n,
-        maxPriorityFeePerGas: 100_000_000n,
+        gas: BigInt(5000000),
+        maxFeePerGas: BigInt(300000000),
+        maxPriorityFeePerGas: BigInt(100000000),
       });
 
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
